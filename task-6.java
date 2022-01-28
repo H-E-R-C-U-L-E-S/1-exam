@@ -1,127 +1,89 @@
-//java მონაცემთა სტრუქტურა რომელიც გვაძლევს საშუალებას O(1) დროში წავშალოთ ელემენტი
-//დავალება არ ითხოვდა თუმცა მონაცემთა სტრუქტურა საშუალებას გვაძლევს  არამარტო წავშალოთ არამედ ჩავსვათ და  მივიღოთ ყველაზე ხშირად გამოყენებული ელემენტი
+/* Java პროგრამა მონაცემთა სტრუქტურის შესაქმნელად
+დავალება ითხოვდა მხოლოდ O(1) დროში ელემენტის წაშლის ოპერაციას 
+თუმცა ამ შემთხვევაში შეგვიძლია
+
+ა)ჩავსვათ ელემნტი
+ბ)წავშალოთ ელემენტი
+გ)მოვძებნოთ ელემენტი
+დ)რენდომ ელემენტი ავიღოთ
+
+*/
+
 import java.util.*;
- 
-class Node {
-	int value;
-	Node prev;
-	Node next;
-	HashSet<Integer> set;
- 
-	public Node(int v){
-		value = v;
-		set = new HashSet<Integer>();
+
+class MyDS{
+ArrayList<Integer> arr;
+
+HashMap<Integer, Integer> hash;
+
+public MyDS(){
+	arr = new ArrayList<Integer>();
+	hash = new HashMap<Integer, Integer>();
+}
+	
+void add(int x)
+{
+	if (hash.get(x) != null)
+		return;
+
+	int s = arr.size();
+	arr.add(x);
+
+	hash.put(x, s);
+}
+
+void remove(int x)
+{
+
+	Integer index = hash.get(x);
+	if (index == null)
+		return;
+
+	hash.remove(x);
+
+	int size = arr.size();
+	Integer last = arr.get(size-1);
+	Collections.swap(arr, index, size-1);
+
+
+	arr.remove(size-1);
+
+	hash.put(last, index);
 	}
- 
-	public String toString(){
-		return value + ":" + set.toString();
+
+
+	int getRandom()
+	{
+	
+	Random rand = new Random(); 
+	int index = rand.nextInt(arr.size());
+
+	
+	return arr.get(index);
+	}
+
+
+	Integer search(int x)
+	{
+	return hash.get(x);
 	}
 }
- 
-public class FrequentCollection {	
- 
-	HashMap<Integer, Node> map;
-	Node head, tail;
- 
 
-	public FrequentCollection() {
-		map = new HashMap<Integer, Node>();
-	}
- 
-	public void insert(int val) {
-		if(map.containsKey(val)){
-			Node n = map.get(val);
-			n.set.remove(val);
- 
-			if(n.next!=null){
-				n.next.set.add(val); 
-				map.put(val, n.next);
-			}else{
-				Node t = new Node(n.value+1);
-				t.set.add(val);
-				n.next = t;
-				t.prev = n;
-				map.put(val, t);
-			}
- 
-			
-			if(head.next!=null)
-				head = head.next;
-		}else{
-			if(tail==null||head==null){
-				Node n = new Node(1);
-				n.set.add(val);
-				map.put(val, n);
- 
-				head = n;
-				tail = n;
-				return;
-			}
- 
-			if(tail.value>1){
-				Node n = new Node(1);
-				n.set.add(val);
-				map.put(val, n);
-				tail.prev = n;
-				n.next = tail;
-				tail = n;
-			}else{
-				tail.set.add(val);
-				map.put(val, tail);
-			}
- 
-		}
- 
- 
-	}
- 
-	public void remove(int val) {
-		Node n = map.get(val);
-		n.set.remove(val);
- 
-		if(n.value==1){
-			map.remove(val);
-		}else{
-			n.prev.set.add(val);
-			map.put(val, n.prev);
-		}
- 
- 
-		while(head!=null && head.set.size()==0){
-			head = head.prev;
-		}
- 
- 
-	}
- 
-	public int getMostFrequent() {
-		if(head==null)
-			return -1;
-		else
-			return head.set.iterator().next();
-	}
- 
-	public static void main(String[] args) {
-		FrequentCollection fc = new FrequentCollection();
-		//ჩავსვათ ელემტი
-		fc.insert(1);
-		fc.insert(1);
-		fc.insert(2);
-		fc.insert(1);
-		fc.insert(1);
-		fc.insert(1);
-		fc.insert(2);
-		fc.insert(2);
- 
- //შევამოწმოთ ყველაზე ხშირად გამოყენებული ელემენტი
-	System.out.println("ყველაზე ხშირად გამოყენებული ელემენტი:"+fc.getMostFrequent());
+public class Main
+{
+    // ელემენტის ჩასასმელად ვიყენებთ ფუნქციას  add,წასაშლელად remove,მოსაძებნად search,რენდომ მისაღებად getRandom
+	public static void main (String[] args)
+	{
+		MyDS ds = new MyDS();
+		ds.add(1);
+		ds.add(2);
+		ds.add(3);
+		ds.add(4);
+		ds.add(5);
 	
-	//წავშალოთ ელემენტი
-		fc.remove(1);
-		fc.remove(1);
-		fc.remove(1);
-		//შევამოწმოთ ყველაზე ხშირად გამოყენებული ელემენტი
-		System.out.println("ყველაზე ხშირად გამოყენებული ელემენტი:"+fc.getMostFrequent());
- 
+		ds.remove(2);
+	
+		System.out.println("searched:"+ds.search(2));
+		System.out.println("random:"+ds.getRandom());
 	}
 }
